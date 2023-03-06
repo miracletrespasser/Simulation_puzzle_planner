@@ -1,0 +1,33 @@
+domain simulation_puzzle_mdp{
+    types {
+		storycomponent: object;
+	};
+    pvariables {
+
+		// Action costs and penalties
+		COST-QUESTION                  : {non-fluent, real, default =   -10 }; // Cost of every question asked
+        REWARD-COMPLETE-COMP          : {non-fluent, real, default = 100 }; // Penalty for not completing the story component
+        PROB-COMPLETE(storycomponent)           : {non-fluent, real, default =   0.5 }; // probability for a district to have rebels
+		PROVIDED(storycomponent) : {non-fluent, bool, default =   false };//provided component of the story
+		// State fluents
+		complete(storycomponent)     : { state-fluent, bool, default = false }; // if a story component is complete
+		
+		// Action fluents
+		question(storycomponent) : { action-fluent, bool, default = false }; //suppress the rebels
+	};
+
+    cpfs {
+		// the formula of success= base-success-probability+ (1-base-success-probability)* sum-of-completed-component/(1+sum-of-components)
+		complete'(?c) = 
+			if (question(?c)) // Question about a component
+            	then [if (~exists_{?c2:storycomponent} (complete(?c2)^~PROVIDED(?c2)))
+                    then Bernoulli(PROB-COMPLETE(?c))
+                    else Bernoulli(PROB-COMPLETE(?c)+( 1 - PROB-COMPLETE(?c))*[[sum_{?c2: storycomponent}(complete(?c2)^~PROVIDED(?c2))]/[1+sum_{?c3: storycomponent}(~PROVIDED(?c3))]])]
+			else
+				complete(?c); // State persists
+	};
+
+	reward =
+ 	    [sum_{?c:storycomponent} [ COST-QUESTION*question(?c) ]] + //cost of asking a question
+		[sum_{?c:storycomponent} [ REWARD-COMPLETE-COMP * complete(?c) ]];
+}
