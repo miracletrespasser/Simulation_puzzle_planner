@@ -1,0 +1,26 @@
+//for this instance, the characters are given and the reason is relatively hard to find
+non-fluents nf_initial_two_character_mdp {
+	domain = simulation_puzzle_mdp;
+	objects {
+		storycomponent : {when,where,why,emotion1,emotion2,who};//two characters with two kinds of emotion
+	};
+	non-fluents {
+        //ASSUME some comonent is given at the intial state
+        PROVIDED(who);
+        //set probability
+        PROB-COMPLETE(emotion1)=0.3;
+        PROB-COMPLETE(why)=0.2;
+	};
+}
+
+instance simulation_mdp_v1 {
+	domain = simulation_puzzle_mdp;
+	non-fluents = nf_initial_two_character_mdp;
+	init-state {
+		complete(who);
+	};
+
+	max-nondef-actions = 1;//simulate the number of troops can be used for missions
+	horizon  = 20;
+	discount = 1.0;
+}
