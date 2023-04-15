@@ -2,7 +2,7 @@
 
 For FOP planner:</br>
 Run the planner in the rddl planning environment:</br>
-rddlprost domainfilename instancefilename trials timelimit(seconds) <\br>
+rddlprost domainfilename instancefilename trials timelimit(seconds) </br>
 To view the result:</br>
 viz data.json</br>
 For FOND planner:</br>
